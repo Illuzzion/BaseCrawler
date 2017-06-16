@@ -1,4 +1,3 @@
-import json
 from io import StringIO
 from urllib.parse import urlparse
 
@@ -18,6 +17,7 @@ class BaseCrawler:
         self.visited = set()
         self.session = requests.session()
         self.result = dict()
+        self.not200 = set()
         self.main_loop()
 
     def get_links(self, lxml_document):
@@ -55,6 +55,9 @@ class BaseCrawler:
                     self.result[current_url] = wrk_result
                 elif wrk_result:
                     self.result[current_url] = wrk_result
+            else:
+                # в это множество будем сохранять страницы с кодом отличным от 200
+                self.not200.add((current_url, res.status_code))
 
     def do_work(self, lxml_doc):
         pass
